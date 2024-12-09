@@ -5,6 +5,7 @@ const ROWS = 20;
 const COLUMNS = 10;
 const BLOCK_SIZE = 30; // 각 블록 크기
 let score = 0; // 점수
+let gameOver = false; // 게임 오버 여부
 
 // 테트리스 게임판 배열
 let board = Array.from({ length: ROWS }, () => Array(COLUMNS).fill(0));
@@ -108,6 +109,8 @@ function drawBoard() {
 
 // 키보드 입력 처리
 document.addEventListener("keydown", function(event) {
+    if (gameOver) return;
+
     if (event.key === "ArrowLeft") {
         if (isValidMove(currentPiece, pieceRow, pieceCol - 1)) {
             pieceCol--;
@@ -141,14 +144,28 @@ function resetGame() {
     pieceCol = Math.floor(COLUMNS / 2) - Math.floor(currentPiece.shape[0].length / 2);
     score = 0;
     document.getElementById("score").textContent = `점수: ${score}`;
+    document.getElementById("gameOver").style.display = "none";
+    gameOver = false;
+}
+
+// 게임 오버 처리
+function gameOverHandler() {
+    gameOver = true;
+    document.getElementById("gameOver").style.display = "block";
 }
 
 // 게임 루프
 function gameLoop() {
+    if (gameOver) return;
+
     if (isValidMove(currentPiece, pieceRow + 1, pieceCol)) {
         pieceRow++;
     } else {
         placePiece();
+        if (pieceRow === 0) {
+            gameOverHandler();
+            return;
+        }
     }
     drawBoard();
     drawPiece();
