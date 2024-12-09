@@ -51,3 +51,11 @@ body {
     font-weight: bold;
     color: #ffbb33;
 }
+
+.game-over {
+    margin-top: 20px;
+    font-size: 32px;
+    color: red;
+    font-weight: bold;
+    display: none;
+}

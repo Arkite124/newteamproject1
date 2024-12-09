@@ -5,6 +5,7 @@ const ROWS = 20;
 const COLUMNS = 10;
 const BLOCK_SIZE = 30; // 각 블록 크기
 let score = 0; // 점수
+let gameOver = false; // 게임 오버 여부
 
 // 테트리스 게임판 배열
 let board = Array.from({ length: ROWS }, () => Array(COLUMNS).fill(0));
@@ -115,7 +116,7 @@ function drawBoard() {
 
 // 키보드 입력 처리
 document.addEventListener("keydown", function(event) {
-    if (gameOver) return; // 게임 오버 상태에서는 키 입력 처리 안함
+    if (gameOver) return;
 
     if (event.key === "ArrowLeft") {
         if (isValidMove(currentPiece, pieceRow, pieceCol - 1)) {
@@ -156,6 +157,14 @@ function resetGame() {
     score = 0;
     gameOver = false;
     document.getElementById("score").textContent = `점수: ${score}`;
+    document.getElementById("gameOver").style.display = "none";
+    gameOver = false;
+}
+
+// 게임 오버 처리
+function gameOverHandler() {
+    gameOver = true;
+    document.getElementById("gameOver").style.display = "block";
 }
 
 // 자동 하강 관련 변수
@@ -163,19 +172,11 @@ let lastMoveTime = 0;
 let gameSpeed = 1000;  // 자동 하강 속도 (밀리초 단위)
 
 // 게임 루프
-function gameLoop(timestamp) {
-    if (gameOver) return; // 게임 오버 상태에서는 루프 종료
-
-    const deltaTime = timestamp - lastMoveTime;
-
-    // 일정 시간이 지난 후에 블록이 자동으로 한 칸 내려가도록 함
-    if (deltaTime > gameSpeed) {
-        if (isValidMove(currentPiece, pieceRow + 1, pieceCol)) {
-            pieceRow++;
-        } else {
-            placePiece(); // 더 이상 내려갈 수 없으면 블록을 고정
-        }
-        lastMoveTime = timestamp;  // 타이머 리셋
+function gameLoop() {
+    if (isValidMove(currentPiece, pieceRow + 1, pieceCol)) {
+        pieceRow++;
+    } else {
+        placePiece();
     }
 
     // 게임판 그리기 및 블록 그리기
